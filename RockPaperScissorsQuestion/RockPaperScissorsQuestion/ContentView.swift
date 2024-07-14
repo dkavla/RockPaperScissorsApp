@@ -78,6 +78,7 @@ struct ContentView: View {
                     Text("Score: \(score)")
                         .padding()
                         .font(.title)
+                        .fontWeight(.bold)
                 }
                 Spacer()
             }
@@ -88,6 +89,8 @@ struct ContentView: View {
         }, message: {
             Text("Game Over! Your score was \(score) out of 10 questions.")
         })
+        .background(
+            LinearGradient(gradient: Gradient(colors: [.mint, .white]), startPoint: .top, endPoint: .bottom))
     }
     
     func evaluateResult(question: String, user: String, outcome: Bool) {
