@@ -39,7 +39,11 @@ struct ContentView: View {
     @State private var win = Bool.random()
     @State private var displayOutcome = ""
     
-    @State private var score = 0
+    @State private var score: Int = 0
+    @State private var showScore = false
+    
+    @State private var questionsLeft = 10
+    @State private var gameOver = false
     
     var body: some View {
         VStack {
@@ -57,13 +61,14 @@ struct ContentView: View {
                     Spacer()
                     Button(action: {
                         evaluateResult(question: currentChoice, user: choices[1], outcome: win)
-                        
+                        askNewQuestion()
                     }, label: {
                         EmojiChoices(text: choices[1])
                     })
                     Spacer()
                     Button(action: {
                         evaluateResult(question: currentChoice, user: choices[2], outcome: win)
+                        askNewQuestion()
                     }, label: {
                         EmojiChoices(text: choices[2])
                     })
@@ -78,6 +83,11 @@ struct ContentView: View {
             }
         }
         .ignoresSafeArea()
+        .alert(displayOutcome, isPresented: $gameOver, actions: {
+            Button("Reset Game", action: resetGame)
+        }, message: {
+            Text("Game Over! Your score was \(score) out of 10 questions.")
+        })
     }
     
     func evaluateResult(question: String, user: String, outcome: Bool) {
@@ -90,9 +100,37 @@ struct ContentView: View {
                     score -= 1
                 }
             }
+        } else {
+            if (question == "🪨" && user == "📄") || (question == "📄" && user == "✂️") || (question == "✂️" && user == "🪨"){
+                if score > 0 {
+                    score -= 1
+                }
+            } else {
+                score += 1
+            }
         }
     }
     
+    // updates the
+    func askNewQuestion() {
+        if questionsLeft > 0 {
+            win.toggle()
+            choices = choices.shuffled()
+            currentChoice = choices[0]
+            questionsLeft -= 1
+        } else {
+            gameOver = true
+        }
+    }
+    
+    func resetGame() {
+        win = Bool.random()
+        choices = choices.shuffled()
+        currentChoice = choices[0]
+        questionsLeft = 10
+        gameOver = true
+        score = 0
+    }
 }
 
 #Preview {
